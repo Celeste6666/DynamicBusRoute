@@ -51,8 +51,8 @@
               </span>
             </template>
 
-            <span class="ms-auto p-2"
-              ><font-awesome-icon :icon="['far', 'bookmark']" class="mx-2 fs-4" />
+            <span class="ms-auto p-2">
+              <font-awesome-icon :icon="['far', 'bookmark']" class="mx-2 fs-4" />
             </span>
           </div>
         </template>

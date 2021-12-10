@@ -46,13 +46,13 @@ export default {
   min-height: 100vh;
 }
 header {
-  z-index: 999;
+  z-index: 1001;
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
 }
 
 footer {
-  z-index: 999;
+  z-index: 1001;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }

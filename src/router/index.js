@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Bus from '@/views/Bus.vue';
 import Arrival from '@/views/Arrival.vue';
+import NearBus from '@/views/NearBus.vue';
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/bus/:city/:routeName/:routeId',
     name: 'Arrival',
     component: Arrival,
+  },
+  {
+    path: '/nearBus',
+    name: 'NearBus',
+    component: NearBus,
   },
 ];
 

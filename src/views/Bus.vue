@@ -1,5 +1,5 @@
 <template>
-  <articale class="bus container" style="padding-top: 120px">
+  <article class="bus container" style="padding-top: 120px">
     <div class="dropdown">
       <button
         class="btn bg-white btn-lg rounded-3 w-100"
@@ -34,7 +34,7 @@
       <div class="text-start">查詢歷史</div>
       <BusRoute />
     </section>
-  </articale>
+  </article>
   <!-- 自製鍵盤 -->
   <section
     v-show="customKeyboard"

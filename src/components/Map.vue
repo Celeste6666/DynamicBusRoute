@@ -1,7 +1,7 @@
 <template>
   <l-map
     ref="busMap"
-    class="position-fixed"
+    :class="[$route.name === 'Arrival' ? 'position-fixed' : 'position-relative']"
     style="height: 40vh; width: 100%; top: 102px"
     :zoom="zoom"
     :center="center"
@@ -9,44 +9,71 @@
     @ready="ready"
   >
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-    <l-control :position="'bottomright'" ref="control" @click="changeMapIsShow">
-      <button class="btn btn-lg bg-white border-primary text-primary">
-        <font-awesome-icon :icon="['fas', 'chevron-up']" class="" />
-      </button>
-    </l-control>
-    <!-- 路線 -->
-    <template v-if="shape.Geometry.coordinates.length !== 0">
-      <l-polyline
-        :lat-lngs="shape.Geometry.coordinates"
-        :color="'#929259'"
-        :opacity="0.45"
-        ref="routeShape"
-      />
-    </template>
+    <template v-if="$route.name === 'Arrival'">
+      <l-control
+        :position="'bottomright'"
+        ref="control"
+        @click="changeMapIsShow"
+        v-if="$route.name === 'Arrival'"
+      >
+        <button class="btn btn-lg bg-white border-primary text-primary">
+          <font-awesome-icon :icon="['fas', 'chevron-up']" class="" />
+        </button>
+      </l-control>
+      <!-- 路線 -->
+      <template v-if="shape.Geometry.coordinates.length !== 0">
+        <l-polyline
+          :lat-lngs="shape.Geometry.coordinates"
+          :color="'#929259'"
+          :opacity="0.45"
+          ref="routeShape"
+        />
+      </template>
 
-    <!-- 各站牌位置 -->
-    <template v-if="stops.length !== 0">
-      <l-marker
-        v-for="stop of stops[0].Stops"
-        :key="stop.StopID"
-        :lat-lng="[stop.StopPosition.PositionLat, stop.StopPosition.PositionLon]"
-      >
-        <l-icon>
-          <font-awesome-icon :icon="['fas', 'map-pin']" class="display-6 text-danger" />
-        </l-icon>
-      </l-marker>
+      <!-- 各站牌位置 -->
+      <template v-if="stops.length !== 0">
+        <l-marker
+          v-for="stop of stops[0].Stops"
+          :key="stop.StopID"
+          :lat-lng="[stop.StopPosition.PositionLat, stop.StopPosition.PositionLon]"
+        >
+          <l-icon>
+            <font-awesome-icon :icon="['fas', 'map-pin']" class="display-6 text-danger" />
+          </l-icon>
+        </l-marker>
+      </template>
+      <!-- 公車目前位置 -->
+      <template v-if="RealTimeByFrequency.length !== 0">
+        <l-marker
+          v-for="bus of RealTimeByFrequency"
+          :key="bus.PlateNumb"
+          :lat-lng="[bus.BusPosition.PositionLat, bus.BusPosition.PositionLon]"
+        >
+          <l-icon>
+            <font-awesome-icon :icon="['fas', 'bus']" class="text-primary display-5" />
+          </l-icon>
+        </l-marker>
+      </template>
     </template>
-    <!-- 公車目前位置 -->
-    <template v-if="RealTimeByFrequency.length !== 0">
-      <l-marker
-        v-for="bus of RealTimeByFrequency"
-        :key="bus.PlateNumb"
-        :lat-lng="[bus.BusPosition.PositionLat, bus.BusPosition.PositionLon]"
-      >
+    <!-- 目前位置 -->
+    <template v-if="$route.name === 'NearBus'">
+      <l-marker :lat-lng="center">
         <l-icon>
-          <font-awesome-icon :icon="['fas', 'bus']" class="text-primary display-5" />
+          <font-awesome-icon :icon="['fas', 'map-marker-alt']" class="text-primary display-5" />
         </l-icon>
       </l-marker>
+      <!-- 各站牌位置 -->
+      <template v-if="nearBusStop.length !== 0">
+        <l-marker
+          v-for="station of nearBusStop"
+          :key="station.StationUID"
+          :lat-lng="[station.StationPosition.PositionLat, station.StationPosition.PositionLon]"
+        >
+          <l-icon>
+            <font-awesome-icon :icon="['fas', 'map-pin']" class="display-6 text-success" />
+          </l-icon>
+        </l-marker>
+      </template>
     </template>
   </l-map>
 </template>
@@ -56,6 +83,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { LMap, LTileLayer, LPolyline, LControl, LMarker, LIcon } from '@vue-leaflet/vue-leaflet';
+import getLocation from '@/hook/getLocation';
 
 export default {
   name: 'Map',
@@ -81,43 +109,51 @@ export default {
 
     // 找出特定路線相關訊息
     const { city, routeName, routeId } = currentRoute.value.params;
+    let updateBusMarker;
     const getAllData = () => {
-      // 車輛位置
-      dispatch('getData', {
-        type: 'realTimeByFrequency',
-        city,
-        routeName,
-        routeId,
-      });
-      // 路線
-      dispatch('getData', {
-        type: 'shape',
-        city,
-        routeName,
-        routeId,
-      });
+      if (currentRoute.value.name === 'Arrival') {
+        // 車輛位置
+        dispatch('getData', {
+          type: 'realTimeByFrequency',
+          city,
+          routeName,
+          routeId,
+        });
+        // 路線
+        dispatch('getData', {
+          type: 'shape',
+          city,
+          routeName,
+          routeId,
+        });
 
-      // 站牌
-      dispatch('getData', {
-        type: 'stop',
-        routeName,
-        city,
-        routeId,
-      });
+        // 站牌
+        dispatch('getData', {
+          type: 'stop',
+          routeName,
+          city,
+          routeId,
+        });
+
+        updateBusMarker = setInterval(() => {
+          dispatch('getData', {
+            type: 'realTimeByFrequency',
+            city,
+            routeName,
+            routeId,
+          });
+        }, 30000);
+      } else if (currentRoute.value.name === 'NearBus') {
+        // 取得目前位置
+        getLocation(3000);
+      }
     };
 
     const ready = () => {
       getAllData();
     };
-    const updateBusMarker = setInterval(() => {
-      dispatch('getData', {
-        type: 'realTimeByFrequency',
-        city,
-        routeName,
-        routeId,
-      });
-    }, 30000);
 
+    // Arrival
     // 路線
     const routeShape = ref(null);
     const shape = computed(() => state.selectedRoute.shape);
@@ -154,6 +190,17 @@ export default {
       emit('changeMapIsShow');
     };
 
+    // NearBus
+    const nearBusStop = computed(() => state.NearLocationBus);
+    const location = computed(() => state.location);
+
+    watch(location, (newVal) => {
+      const { lat, lon } = newVal;
+      center.value = [lat, lon];
+      zoom.value = 13;
+      busMap.value.leafletObject.flyTo([lat, lon], zoom.value);
+    });
+
     onUnmounted(() => {
       clearInterval(updateBusMarker);
     });
@@ -169,6 +216,7 @@ export default {
       stops,
       RealTimeByFrequency,
       changeMapIsShow,
+      nearBusStop,
     };
   },
   data() {

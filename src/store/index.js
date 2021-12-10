@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import hmacSHA1 from 'crypto-js/hmac-sha1';
 import Base64 from 'crypto-js/enc-base64';
+import { getDistance } from 'computeddistance';
 import convertToGeoJson from '@/hook/convertToGeoJson';
 
 // 會用到的 API
@@ -81,6 +82,12 @@ export default createStore({
       // 特定路線定點資料(確定車牌要到哪一站)
       RealTimeNearStop: [],
     },
+    // 目前位置
+    location: {
+      lat: '',
+      lon: '',
+      city: '',
+    },
     // 附近公車
     NearLocationBus: [],
   },
@@ -132,6 +139,23 @@ export default createStore({
       }
       return [];
     },
+    filterNearLocationBus: (state) => {
+      const { lat, lon } = state.location;
+      const stopData = state.NearLocationBus.reduce((acc, cur) => {
+        let nearStop = acc;
+        cur.Stops.forEach((item) => {
+          if (acc.some((stop) => stop.StopUID === item.StopUID)) {
+            return;
+          }
+          // getDistance(lon1,lat1,lon2,lat2)
+          const { PositionLon, PositionLat } = cur.StationPosition;
+          const distance = Math.ceil(getDistance(lon, lat, PositionLon, PositionLat) * 1000);
+          nearStop = [...acc, { ...item, distance }];
+        });
+        return nearStop;
+      }, []);
+      return stopData;
+    },
   },
   mutations: {
     getRouteData(state, payload) {
@@ -159,6 +183,9 @@ export default createStore({
     },
     getDataNearLocation(state, payload) {
       state.NearLocationBus = payload;
+    },
+    getLocation(state, payload) {
+      state.location = payload;
     },
   },
   actions: {
@@ -234,19 +261,41 @@ export default createStore({
       // 清空附近公車站資料
       commit('clearDataNearLocation');
 
-      // 循環縣市找出附近公車
+      const { lat, lon, DistanceInMeters } = payload;
+      // nominatim 找出縣市
       const { nominatim_url: nominatiml, Station_url: station } = state.api;
-      const { lat, lon } = payload;
       const locationRes = await fetch(`${nominatiml}lat=${lat}&lon=${lon}&accept-language=en`);
       const locationData = await locationRes.json();
-      const { county: city } = locationData.address;
-      if (city.includes('Keelung') && city.includes('Lienchiang')) {
-        const res = await fetch(`${station}${city}?$spatialFilter=nearby(${lat}, ${lon}, 500)&$format=JSON`, getters.headers);
+      const city = locationData.address.county.replace(' ', '');
+      commit('getLocation', { lat, lon, city });
+      // 透過縣市找出公車站
+      if (!city.includes('Keelung') && !city.includes('Lienchiang')) {
+        let res;
+        if (DistanceInMeters === 1000) {
+          res = await fetch(`${station}${city}?$spatialFilter=nearby(${lat}, ${lon}, ${DistanceInMeters})&$format=JSON`, getters.headers);
+        } else {
+          res = await fetch(`${station}${city.replace(' ', '')}?$spatialFilter=nearby(${lat}, ${lon}, ${DistanceInMeters})&$format=JSON`, getters.headers);
+        }
         const data = await res.json();
         if (res.ok && data.length !== 0) {
-          commit('getDataNearLocation', data);
+          const newData = data.reduce((acc, cur) => {
+            if (!acc.some((item) => item.StationGroupID === cur.StationGroupID)) {
+              return [...acc, cur];
+            }
+            return acc;
+          }, []);
+          commit('getDataNearLocation', newData);
         }
       }
+    },
+    async getDestinationStop({ state, getters }, payload) {
+      const { Route_url: route } = state.api;
+      const { city, RouteName, RouteUID } = payload;
+      const res = await fetch(`${route}${city}/${RouteName}?$select=DepartureStopNameZh&$filter=RouteUID eq '${RouteUID}'&$format=JSON`, getters.headers);
+      if (res.ok) {
+        return res;
+      }
+      return [];
     },
   },
   modules: {

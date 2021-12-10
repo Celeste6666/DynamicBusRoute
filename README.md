@@ -36,4 +36,3 @@ chevron-up
 chevron-down
 exchange-alt
 backspace
-

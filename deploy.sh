@@ -14,7 +14,7 @@ set -e
 
 # git init
 git add -A
-git commit -m '完成附近公車搜尋'
+git commit -m '修改附近公車搜尋功能(完成首頁抵達時間預估及目的地車站)'
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master

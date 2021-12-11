@@ -1,5 +1,5 @@
 <template>
-  <Map />
+  <Map :open-station-uid="open" />
   <article class="container position-relative" style="top: 120px; padding-bottom: 180px">
     <div class="accordion my-2" v-if="nearBusStop.length !== 0">
       <div
@@ -44,7 +44,7 @@
             >
               <div class="col-3 text-start">{{ stop.RouteName.Zh_tw }}</div>
               <div class="col-7">
-                <span class="m-1">往{{ stop.DepartureStopNameZh }}</span>
+                <span class="m-1">往{{ stop.DestinationStopNameZh }}</span>
               </div>
               <span class="col-2 text-end p-2">
                 <font-awesome-icon :icon="['far', 'bookmark']" class="fs-4" />
@@ -85,14 +85,14 @@ export default {
         station.Stops.forEach(async (item) => {
           const stop = item;
           const busDestinationStopRes = await dispatch('getDestinationStop', {
+            type: 'route',
             city: city.value,
             RouteName: stop.RouteName.Zh_tw,
             RouteUID: stop.RouteUID,
           });
-          const data = await busDestinationStopRes.json();
           stationRoute.value = [
             ...stationRoute.value,
-            { ...stop, DepartureStopNameZh: data[0].DepartureStopNameZh },
+            { ...stop, DestinationStopNameZh: busDestinationStopRes[0].DestinationStopNameZh },
           ];
         });
       }

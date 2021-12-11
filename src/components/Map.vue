@@ -70,7 +70,13 @@
           :lat-lng="[station.StationPosition.PositionLat, station.StationPosition.PositionLon]"
         >
           <l-icon>
-            <font-awesome-icon :icon="['fas', 'map-pin']" class="display-6 text-success" />
+            <font-awesome-icon
+              :icon="['fas', 'map-pin']"
+              :class="[
+                'display-6',
+                openStationUid === station.StationUID ? 'text-danger' : 'text-success',
+              ]"
+            />
           </l-icon>
         </l-marker>
       </template>
@@ -97,6 +103,7 @@ export default {
   },
   props: {
     direction: Number,
+    openStationUid: String,
   },
   setup(props, { emit }) {
     const { state, getters, dispatch } = useStore();

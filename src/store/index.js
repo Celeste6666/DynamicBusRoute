@@ -134,7 +134,14 @@ export default createStore({
     },
     filterEstimatedBus: (state) => (direction) => {
       if (state.selectedRoute.Estimated.length !== 0) {
-        const stop = state.selectedRoute.Estimated.filter((bus) => bus.Direction === direction);
+        const diffBus = state.selectedRoute.Estimated.reduce((acc, cur) => {
+          if (!acc.some((item) => item.StopUID === cur.StopUID
+          && item.Direction === cur.Direction)) {
+            return [...acc, cur];
+          }
+          return acc;
+        }, []);
+        const stop = diffBus.filter((bus) => bus.Direction === direction);
         return stop;
       }
       return [];
@@ -263,7 +270,10 @@ export default createStore({
 
       const { lat, lon, DistanceInMeters } = payload;
       // nominatim 找出縣市
-      const { nominatim_url: nominatiml, Station_url: station } = state.api;
+      const {
+        nominatim_url: nominatiml,
+        Station_url: station,
+      } = state.api;
       const locationRes = await fetch(`${nominatiml}lat=${lat}&lon=${lon}&accept-language=en`);
       const locationData = await locationRes.json();
       const city = locationData.address.county.replace(' ', '');
@@ -289,11 +299,23 @@ export default createStore({
       }
     },
     async getDestinationStop({ state, getters }, payload) {
-      const { Route_url: route } = state.api;
-      const { city, RouteName, RouteUID } = payload;
-      const res = await fetch(`${route}${city}/${RouteName}?$select=DepartureStopNameZh&$filter=RouteUID eq '${RouteUID}'&$format=JSON`, getters.headers);
+      const { Route_url: route, Estimated_url: estimated } = state.api;
+      const { city, RouteName, RouteUID, type, StopUID } = payload;
+      let res;
+      switch (type) {
+        case 'route':
+          res = await fetch(`${route}${city}/${RouteName}?$select=DestinationStopNameZh &$filter=RouteUID eq '${RouteUID}'&$format=JSON`, getters.headers);
+          break;
+        case 'estimated':
+          res = await fetch(`${estimated}${city}/${RouteName}?$filter=RouteUID eq '${RouteUID}' and StopUID eq '${StopUID}' and StopStatus eq '正常'&$top=1&$format=JSON`, getters.headers);
+          break;
+        default:
+          break;
+      }
+
       if (res.ok) {
-        return res;
+        const data = await res.json();
+        return data;
       }
       return [];
     },

@@ -20,8 +20,8 @@
         <td class="px-0 text-start">
           {{ route.DestinationStopNameZh }}
         </td>
-        <td>
-          <font-awesome-icon :icon="['far', 'bookmark']" class="mx-2" />
+        <td v-if="$route.name !== 'CollectRoute'" @click.stop="setCollectRoute(route.RouteUID)">
+          <font-awesome-icon :icon="[route.isCollect ? 'fas' : 'far', 'bookmark']" class="mx-2" />
         </td>
       </tr>
     </tbody>
@@ -34,7 +34,7 @@ import { computed } from 'vue';
 
 export default {
   setup() {
-    const { state } = useStore();
+    const { state, commit } = useStore();
     const router = useRouter();
 
     const routes = computed(() => state.routes);
@@ -43,7 +43,20 @@ export default {
       router.push({ name: 'Arrival', params: { city, routeName, routeId } });
     };
 
-    return { routes, changeRouterId };
+    const setCollectRoute = (routeId) => {
+      let collectRoute = JSON.parse(localStorage.getItem('collectRoute')) || [];
+      const storeRoute = routes.value.find((route) => route.RouteUID === routeId);
+      if (storeRoute.isCollect) {
+        const storeIndex = collectRoute.findIndex((route) => route.RouteUID === routeId);
+        collectRoute.splice(storeIndex, 1);
+      } else {
+        collectRoute = [...collectRoute, storeRoute];
+      }
+      localStorage.setItem('collectRoute', JSON.stringify(collectRoute));
+      commit('getRouteData', routes.value);
+    };
+
+    return { routes, changeRouterId, setCollectRoute };
   },
 };
 </script>

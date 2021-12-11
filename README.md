@@ -1,9 +1,8 @@
-# Week 3 - 全台公車動態時刻查詢應用服務
+# Week 3 - 全台公車動態時刻查詢應用服務(手機版)
 
 GitHub Page: [https://celeste6666.github.io/DynamicBusRoute/](https://celeste6666.github.io/DynamicBusRoute/)
 
 採用 F2E 3rd [lencheng之設計稿](https://2021.thef2e.com/users/6296427084285740109?week=3&type=1)。
-
 
 # 使用技術
 

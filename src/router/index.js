@@ -3,6 +3,9 @@ import Home from '@/views/Home.vue';
 import Bus from '@/views/Bus.vue';
 import Arrival from '@/views/Arrival.vue';
 import NearBus from '@/views/NearBus.vue';
+import Collect from '@/views/Collect.vue';
+import CollectStation from '@/components/CollectStation.vue';
+import CollectRoute from '@/components/CollectRoute.vue';
 
 const routes = [
   {
@@ -24,6 +27,23 @@ const routes = [
     path: '/nearBus',
     name: 'NearBus',
     component: NearBus,
+  },
+  {
+    path: '/collect',
+    name: 'Collect',
+    component: Collect,
+    children: [
+      {
+        path: 'station',
+        name: 'CollectStation',
+        component: CollectStation,
+      },
+      {
+        path: 'route',
+        name: 'CollectRoute',
+        component: CollectRoute,
+      },
+    ],
   },
 ];
 

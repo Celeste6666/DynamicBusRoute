@@ -166,6 +166,15 @@ export default createStore({
   },
   mutations: {
     getRouteData(state, payload) {
+      const collectRoute = JSON.parse(localStorage.getItem('collectRoute')) || [];
+      payload.forEach((route) => {
+        const routeData = route;
+        if (collectRoute.some((item) => item.RouteUID === route.RouteUID)) {
+          routeData.isCollect = true;
+        } else {
+          routeData.isCollect = false;
+        }
+      });
       state.routes = payload;
     },
     getShapeData(state, payload) {
@@ -174,6 +183,17 @@ export default createStore({
       state.selectedRoute.shape = shape;
     },
     getStopData(state, payload) {
+      payload.forEach((item) => {
+        item.Stops.forEach((stop) => {
+          const stopData = stop;
+          const collectStation = JSON.parse(localStorage.getItem('collectStation')) || [];
+          if (collectStation.some((station) => station.stop.StopUID === stop.StopUID)) {
+            stopData.isCollect = true;
+          } else {
+            stopData.isCollect = false;
+          }
+        });
+      });
       state.selectedRoute.Stops = payload;
     },
     getRealTimeByFrequencyData(state, payload) {
@@ -183,6 +203,7 @@ export default createStore({
       state.selectedRoute.RealTimeNearStop = payload;
     },
     getEstimatedData(state, payload) {
+      console.log(payload);
       state.selectedRoute.Estimated = payload;
     },
     clearDataNearLocation(state) {

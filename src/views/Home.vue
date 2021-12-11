@@ -9,7 +9,7 @@
         <div class="h5">附近公車</div>
         <small class="text-success">查詢附近公車站及其路線</small>
       </router-link>
-      <router-link to="/collect" class="btn py-3 bg-white rounded-3 shadow">
+      <router-link to="/collect/station" class="btn py-3 bg-white rounded-3 shadow">
         <div class="h5">我的收藏</div>
         <small class="text-success">收藏的公車站及路線</small>
       </router-link>

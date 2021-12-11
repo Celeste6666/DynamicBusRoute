@@ -39,7 +39,7 @@
   <section
     v-show="customKeyboard"
     class="position-fixed bottom-0 w-100 bg-white shadow fs-4"
-    style="z-index: 1000"
+    style="z-index: 1002"
   >
     <div class="container d-flex flex-column align-items-center">
       <p class="mt-4" v-if="keyboard">{{ routeName }}</p>

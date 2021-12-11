@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="text-end">
-        <div class="fs-4 p-2" @click="changeRouteDirection">
+        <div class="fs-4 p-2" @click.stop="changeRouteDirection">
           <font-awesome-icon :icon="['fas', 'exchange-alt']" class="fs-4 ms-2" />
         </div>
       </div>
@@ -51,8 +51,11 @@
               </span>
             </template>
 
-            <span class="ms-auto p-2">
-              <font-awesome-icon :icon="['far', 'bookmark']" class="mx-2 fs-4" />
+            <span class="ms-auto p-2" @click.stop="setCollectStation(stop.StopUID)">
+              <font-awesome-icon
+                :icon="[stop.isCollect ? 'fas' : 'far', 'bookmark']"
+                class="mx-2 fs-4"
+              />
             </span>
           </div>
         </template>
@@ -72,7 +75,7 @@ export default {
     Map,
   },
   setup() {
-    const { getters, dispatch } = useStore();
+    const { state, getters, dispatch, commit } = useStore();
     const { currentRoute } = useRouter();
     const mapIsShow = ref(false);
 
@@ -129,6 +132,20 @@ export default {
       mapIsShow.value = !mapIsShow.value;
     };
 
+    // 收藏車站
+    const setCollectStation = (stationId) => {
+      let collectStation = JSON.parse(localStorage.getItem('collectStation')) || [];
+      const storeStation = stops.value[0].Stops.find((stop) => stop.StopUID === stationId);
+      if (storeStation.isCollect) {
+        const storeIndex = collectStation.findIndex((stop) => stop.StopUID === stationId);
+        collectStation.splice(storeIndex, 1);
+      } else {
+        collectStation = [...collectStation, { route: route.value[0], stop: storeStation }];
+      }
+      localStorage.setItem('collectStation', JSON.stringify(collectStation));
+      commit('getStopData', state.selectedRoute.Stops);
+    };
+
     onUnmounted(() => {
       clearInterval(updateBus);
     });
@@ -142,6 +159,7 @@ export default {
       accurateStops,
       estimateds,
       changeMapIsShow,
+      setCollectStation,
     };
   },
 };

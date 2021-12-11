@@ -21,5 +21,7 @@ export default function getLocation(DistanceInMeters) {
       },
       options,
     );
+  } else {
+    alert('你的裝置或瀏覽器不支援定位功能');
   }
 }

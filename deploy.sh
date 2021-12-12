@@ -14,7 +14,7 @@ set -e
 
 # git init
 git add -A
-git commit -m '完成收藏頁面'
+git commit -m '完成收藏頁面刪除及側邊選單功能'
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master

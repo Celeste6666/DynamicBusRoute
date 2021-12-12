@@ -203,7 +203,6 @@ export default createStore({
       state.selectedRoute.RealTimeNearStop = payload;
     },
     getEstimatedData(state, payload) {
-      console.log(payload);
       state.selectedRoute.Estimated = payload;
     },
     clearDataNearLocation(state) {
@@ -297,16 +296,11 @@ export default createStore({
       } = state.api;
       const locationRes = await fetch(`${nominatiml}lat=${lat}&lon=${lon}&accept-language=en`);
       const locationData = await locationRes.json();
-      const city = locationData.address.county.replace(' ', '');
+      const city = locationData.address.county.replace(' ', '') || locationData.address.city.replace(' ', '');
       commit('getLocation', { lat, lon, city });
       // 透過縣市找出公車站
       if (!city.includes('Keelung') && !city.includes('Lienchiang')) {
-        let res;
-        if (DistanceInMeters === 1000) {
-          res = await fetch(`${station}${city}?$spatialFilter=nearby(${lat}, ${lon}, ${DistanceInMeters})&$format=JSON`, getters.headers);
-        } else {
-          res = await fetch(`${station}${city.replace(' ', '')}?$spatialFilter=nearby(${lat}, ${lon}, ${DistanceInMeters})&$format=JSON`, getters.headers);
-        }
+        const res = await fetch(`${station}${city}?$spatialFilter=nearby(${lat}, ${lon}, ${DistanceInMeters})&$format=JSON`, getters.headers);
         const data = await res.json();
         if (res.ok && data.length !== 0) {
           const newData = data.reduce((acc, cur) => {

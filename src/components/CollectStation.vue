@@ -1,7 +1,15 @@
 <template>
   <table class="table table-borderless align-middle" v-if="stations.length !== 0">
     <tbody>
-      <tr class="bg-white" v-for="station of stations" :key="station.stop.StopUID">
+      <tr
+        :class="[
+          'bg-white position-relative',
+          deleteBtnIsShow === station.stop.StopUID ? 'moveRight' : '',
+        ]"
+        v-for="station of stations"
+        :key="station.stop.StopUID"
+        @touchmove.prevent="showDeleteBtn(station.stop.StopUID)"
+      >
         <td class="text-start">
           <h5>{{ station.route.RouteName.Zh_tw }}</h5>
           <div class="text-success fs-xs">往{{ station.route.DestinationStopNameZh }}</div>
@@ -18,19 +26,30 @@
             }}
           </td>
         </template>
+        <td
+          class="w-25 h-100 p-0 position-absolute right-0"
+          v-if="deleteBtnIsShow === station.stop.StopUID"
+        >
+          <button
+            class="w-100 h-100 btn btn-primary rounded-3"
+            @touchend.prevent="removeCollect(station.stop.StopUID)"
+          >
+            刪除
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
 </template>
 <script>
 import { useStore } from 'vuex';
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 export default {
   name: 'CollectStation',
   setup() {
     const { state, getters } = useStore();
-    const stations = computed(() => JSON.parse(localStorage.getItem('collectStation')));
+    const stations = ref(JSON.parse(localStorage.getItem('collectStation')));
     const estimateTime = ref([]);
 
     watch(
@@ -51,10 +70,34 @@ export default {
       { immediate: true },
     );
 
+    // 用來判斷目前是否為touchmove事件，如果是就touchend事件就return
+    const deleteBtnIsShow = ref(null);
+
+    const showDeleteBtn = (stopId) => {
+      deleteBtnIsShow.value = stopId;
+    };
+
+    const removeCollect = (id) => {
+      const collectStation = JSON.parse(localStorage.getItem('collectStation')) || [];
+      const storeIndex = collectStation.findIndex((station) => station.stop.StopUID === id);
+      collectStation.splice(storeIndex, 1);
+      localStorage.setItem('collectStation', JSON.stringify(collectStation));
+      stations.value = JSON.parse(localStorage.getItem('collectStation'));
+    };
+
     return {
       stations,
       estimateTime,
+      deleteBtnIsShow,
+      showDeleteBtn,
+      removeCollect,
     };
   },
 };
 </script>
+<style lang="scss" scoped>
+tr.moveRight {
+  transform: translate(-88px, 0);
+  transition: 0.3s linear;
+}
+</style>

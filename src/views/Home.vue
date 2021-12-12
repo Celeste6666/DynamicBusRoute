@@ -23,7 +23,7 @@
         <div class="small mb-1">開啟定位服務，以獲得更多資訊</div>
         <button
           class="btn btn-lg px-3 w-75 bg-white rounded-3 shadow"
-          @click.prevent.stop="openGeolocation"
+          @touchend.prevent.stop="openGeolocation"
         >
           開啟定位服務
         </button>
@@ -45,7 +45,7 @@
                 <div class="text-success fs-xs">{{ stop.distance }}公尺</div>
               </td>
               <td class="text-end">
-                <div>{{ stop.EstimateTime }}分</div>
+                {{ stop.EstimateTime }}
               </td>
             </tr>
           </tbody>
@@ -106,7 +106,9 @@ export default {
               {
                 ...stop,
                 DestinationStopNameZh: destination[0].DestinationStopNameZh,
-                EstimateTime: Math.ceil(estimated[0].EstimateTime / 60),
+                EstimateTime: estimated[0]
+                  ? `${Math.ceil(estimated[0].EstimateTime / 60)}分`
+                  : '未提供',
               },
             ];
           });

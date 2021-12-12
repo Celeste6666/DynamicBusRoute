@@ -9,9 +9,18 @@
         v-show="$route.path !== '/'"
       />
       <span class="mx-auto">全台公車時刻資訊整合網</span>
-      <font-awesome-icon :icon="['fas', 'bars']" class="fs-4" v-show="$route.path !== '/'" />
+      <font-awesome-icon
+        :icon="['fas', 'bars']"
+        class="fs-4"
+        v-show="$route.path !== '/'"
+        data-bs-toggle="offcanvas"
+        href="#menu"
+        role="button"
+        aria-controls="offcanvasExample"
+      />
     </section>
   </header>
+  <Menu />
   <router-view style="padding-top: 120px" />
   <footer class="position-fixed bottom-0 w-100 bg-white text-success shadow py-3">
     Designed By Len Cheng
@@ -19,9 +28,13 @@
 </template>
 <script>
 import { useRouter } from 'vue-router';
+import Menu from '@/components/Menu.vue';
 
 export default {
   name: 'App',
+  components: {
+    Menu,
+  },
   setup() {
     const router = useRouter();
     const backToLast = () => {

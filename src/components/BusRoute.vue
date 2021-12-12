@@ -5,23 +5,38 @@
   >
     <tbody>
       <tr
-        class="bg-white btn-lg"
         v-for="route of routes"
         :key="route.RouteUID"
-        @click="changeRouterId(route.City, route.RouteName.Zh_tw, route.RouteUID)"
+        :class="[
+          'bg-white btn-lg position-relative',
+          deleteBtnIsShow === route.RouteUID ? 'moveRight' : '',
+        ]"
+        @touchmove.prevent="showDeleteBtn(route.RouteUID)"
+        @touchend.prevent="changeRouterId(route.City, route.RouteName.Zh_tw, route.RouteUID)"
       >
-        <td class="px-0">{{ route.RouteName.Zh_tw }}</td>
-        <td class="px-0 text-end">
+        <td class="">{{ route.RouteName.Zh_tw }}</td>
+        <td class="text-end">
           {{ route.DepartureStopNameZh }}
         </td>
-        <td class="px-0">
+        <td>
           <font-awesome-icon :icon="['fas', 'exchange-alt']" class="mx-2" />
         </td>
-        <td class="px-0 text-start">
+        <td class="text-start">
           {{ route.DestinationStopNameZh }}
         </td>
-        <td v-if="$route.name !== 'CollectRoute'" @click.stop="setCollectRoute(route.RouteUID)">
+        <td v-if="$route.name !== 'CollectRoute'" @touchend.stop="setCollectRoute(route.RouteUID)">
           <font-awesome-icon :icon="[route.isCollect ? 'fas' : 'far', 'bookmark']" class="mx-2" />
+        </td>
+        <td
+          class="w-25 h-100 p-0 position-absolute right-0"
+          v-if="deleteBtnIsShow === route.RouteUID"
+        >
+          <button
+            class="w-100 h-100 btn btn-primary rounded-3"
+            @touchend.prevent="removeCollect(route.RouteUID)"
+          >
+            刪除
+          </button>
         </td>
       </tr>
     </tbody>
@@ -30,7 +45,7 @@
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 
 export default {
   setup() {
@@ -39,8 +54,17 @@ export default {
 
     const routes = computed(() => state.routes);
 
+    // 用來判斷目前是否為touchmove事件，如果是就touchend事件就return
+    const deleteBtnIsShow = ref(null);
+    // touchend
     const changeRouterId = (city, routeName, routeId) => {
-      router.push({ name: 'Arrival', params: { city, routeName, routeId } });
+      if (deleteBtnIsShow.value !== routeId) {
+        router.push({ name: 'Arrival', params: { city, routeName, routeId } });
+      }
+    };
+
+    const showDeleteBtn = (routeId) => {
+      deleteBtnIsShow.value = routeId;
     };
 
     const setCollectRoute = (routeId) => {
@@ -56,7 +80,22 @@ export default {
       commit('getRouteData', routes.value);
     };
 
-    return { routes, changeRouterId, setCollectRoute };
+    const removeCollect = (id) => {
+      const collectRoute = JSON.parse(localStorage.getItem('collectRoute')) || [];
+      const storeIndex = collectRoute.findIndex((route) => route.RouteUID === id);
+      collectRoute.splice(storeIndex, 1);
+      localStorage.setItem('collectRoute', JSON.stringify(collectRoute));
+      commit('getRouteData', JSON.parse(localStorage.getItem('collectRoute')));
+    };
+
+    return {
+      routes,
+      changeRouterId,
+      setCollectRoute,
+      showDeleteBtn,
+      deleteBtnIsShow,
+      removeCollect,
+    };
   },
 };
 </script>
@@ -73,5 +112,10 @@ table {
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
   }
+}
+
+tr.moveRight {
+  transform: translate(-88px, 0);
+  transition: 0.3s linear;
 }
 </style>

@@ -10,6 +10,7 @@ export default function getLocation(DistanceInMeters) {
 
     const success = (pos) => {
       const crd = pos.coords;
+      console.log(crd);
       const { latitude: lat, longitude: lon } = crd;
       store.dispatch('getDataNearLocation', { lat, lon, DistanceInMeters });
     };
@@ -17,7 +18,7 @@ export default function getLocation(DistanceInMeters) {
     navigator.geolocation.getCurrentPosition(
       success,
       (err) => {
-        console.error(err);
+        console.log(err);
       },
       options,
     );

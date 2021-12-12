@@ -13,8 +13,8 @@
         <font-awesome-icon :icon="['fas', 'chevron-down']" class="fs-6 ms-3" />
       </button>
       <ul class="dropdown-menu rounded-3 shadow w-100 overflow-scroll" ref="dropdownMenu">
-        <li class="p-3 btn-lg position-absolute dropdown-menu-icon" @click.stop="closeDropMenu">
-          <font-awesome-icon :icon="['fas', 'chevron-up']" @click.stop="closeDropMenu" />
+        <li class="p-3 btn-lg position-absolute dropdown-menu-icon" @touchend.stop="closeDropMenu">
+          <font-awesome-icon :icon="['fas', 'chevron-up']" @touchend.stop="closeDropMenu" />
         </li>
         <li
           class="text-center py-3 btn-lg"
@@ -22,7 +22,7 @@
           :key="key"
           :data-city-en="key"
           :data-city-zh="city"
-          @click="getCityName"
+          @touchend="getCityName"
         >
           {{ city.substring(0, 2) }}公車
         </li>
@@ -51,12 +51,12 @@
           style="text-align: center"
           class="form-control border-0 me-3 fs-3 lh-sm"
         />
-        <button class="btn btn-lg btn-outline-primary fs-2" @click="changeKeyboard">
+        <button class="btn btn-lg btn-outline-primary fs-2" @touchend="changeKeyboard">
           <font-awesome-icon :icon="['fas', 'globe']" />
         </button>
       </div>
 
-      <div class="row gx-1 gy-2 btns-option mb-3" v-if="keyboard" @click="getRouteName">
+      <div class="row gx-1 gy-2 btns-option mb-3" v-if="keyboard" @touchend="getRouteName">
         <div class="col">
           <button class="btn btn-lg btn-outline-primary">{{ options ? '紅' : '內科' }}</button>
         </div>
@@ -91,12 +91,12 @@
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" @click="changeKeyboard">
+          <button class="btn btn-lg btn-outline-primary" @touchend="changeKeyboard">
             <font-awesome-icon :icon="['fas', 'globe']" />
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" @click="changeOptions">
+          <button class="btn btn-lg btn-outline-primary" @touchend="changeOptions">
             {{ options ? '更多' : '返回' }}
           </button>
         </div>
@@ -104,12 +104,16 @@
           <button class="btn btn-lg btn-outline-primary">0</button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" data-clear="all" @click.stop="deleteWord">
+          <button
+            class="btn btn-lg btn-outline-primary"
+            data-clear="all"
+            @touchend.stop="deleteWord"
+          >
             重設
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" data-clear="1" @click.stop="deleteWord">
+          <button class="btn btn-lg btn-outline-primary" data-clear="1" @touchend.stop="deleteWord">
             <font-awesome-icon :icon="['fas', 'backspace']" />
           </button>
         </div>

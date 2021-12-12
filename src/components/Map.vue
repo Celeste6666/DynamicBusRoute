@@ -13,7 +13,7 @@
       <l-control
         :position="'bottomright'"
         ref="control"
-        @click="changeMapIsShow"
+        @touchend="changeMapIsShow"
         v-if="$route.name === 'Arrival'"
       >
         <button class="btn btn-lg bg-white border-primary text-primary">
@@ -106,6 +106,7 @@ export default {
     openStationUid: String,
   },
   setup(props, { emit }) {
+    console.log('Map');
     const { state, getters, dispatch } = useStore();
     const { currentRoute } = useRouter();
 
@@ -152,7 +153,7 @@ export default {
         }, 30000);
       } else if (currentRoute.value.name === 'NearBus') {
         // 取得目前位置
-        getLocation(3000);
+        getLocation(4500);
       }
     };
 
@@ -202,6 +203,7 @@ export default {
     const location = computed(() => state.location);
 
     watch(location, (newVal) => {
+      console.log(newVal);
       const { lat, lon } = newVal;
       center.value = [lat, lon];
       zoom.value = 13;

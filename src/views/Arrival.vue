@@ -7,13 +7,13 @@
         <div class="align-bottom fs-6">
           <span v-if="direction === 0">往{{ route[0].DestinationStopNameZh }}</span>
           <span v-else>往{{ route[0].DepartureStopNameZh }}</span>
-          <span class="fs-4 p-2" @touchend="changeMapIsShow">
+          <span class="fs-4 p-2" @pointerup="changeMapIsShow">
             <font-awesome-icon :icon="['far', 'map']" class="" />
           </span>
         </div>
       </div>
       <div class="text-end">
-        <div class="fs-4 p-2" @touchend.stop="changeRouteDirection">
+        <div class="fs-4 p-2" @pointerup.stop="changeRouteDirection">
           <font-awesome-icon :icon="['fas', 'exchange-alt']" class="fs-4 ms-2" />
         </div>
       </div>
@@ -51,7 +51,7 @@
               </span>
             </template>
 
-            <span class="ms-auto p-2" @touchend.stop="setCollectStation(stop.StopUID)">
+            <span class="ms-auto p-2" @pointerup.stop="setCollectStation(stop.StopUID)">
               <font-awesome-icon
                 :icon="[stop.isCollect ? 'fas' : 'far', 'bookmark']"
                 class="mx-2 fs-4"

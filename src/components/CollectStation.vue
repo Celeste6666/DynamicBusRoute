@@ -8,7 +8,7 @@
         ]"
         v-for="station of stations"
         :key="station.stop.StopUID"
-        @touchmove.prevent="showDeleteBtn(station.stop.StopUID)"
+        @pointermove.prevent="showDeleteBtn($event, station.stop.StopUID)"
       >
         <td class="text-start">
           <h5>{{ station.route.RouteName.Zh_tw }}</h5>
@@ -32,7 +32,7 @@
         >
           <button
             class="w-100 h-100 btn btn-primary rounded-3"
-            @touchend.prevent="removeCollect(station.stop.StopUID)"
+            @pointerup.prevent="removeCollect(station.stop.StopUID)"
           >
             刪除
           </button>
@@ -70,11 +70,22 @@ export default {
       { immediate: true },
     );
 
-    // 用來判斷目前是否為touchmove事件，如果是就touchend事件就return
+    // 用來判斷目前是否為pointermove事件，如果是就pointerup事件就return
     const deleteBtnIsShow = ref(null);
 
-    const showDeleteBtn = (stopId) => {
-      deleteBtnIsShow.value = stopId;
+    let pointerOffsetX = 0;
+    const showDeleteBtn = (e, stopId) => {
+      if (!pointerOffsetX) {
+        pointerOffsetX = e.offsetX;
+        return;
+      }
+      if (pointerOffsetX - e.offsetX > 1) {
+        deleteBtnIsShow.value = stopId;
+        pointerOffsetX = 0;
+      } else if (pointerOffsetX - e.offsetX < 0) {
+        deleteBtnIsShow.value = '';
+        pointerOffsetX = 0;
+      }
     };
 
     const removeCollect = (id) => {
@@ -96,8 +107,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-tr.moveRight {
-  transform: translate(-88px, 0);
+tr {
   transition: 0.3s linear;
+  &.moveRight {
+    transform: translate(-88px, 0);
+  }
 }
 </style>

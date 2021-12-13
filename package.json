@@ -64,7 +64,8 @@
             "multiline": true
           }
         }
-      ]
+      ],
+      "operator-linebreak": ["error", "after"]
     }
   },
   "browserslist": [

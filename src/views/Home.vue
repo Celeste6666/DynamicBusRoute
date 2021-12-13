@@ -23,7 +23,7 @@
         <div class="small mb-1">開啟定位服務，以獲得更多資訊</div>
         <button
           class="btn btn-lg px-3 w-75 bg-white rounded-3 shadow"
-          @touchend.prevent.stop="openGeolocation"
+          @pointerup.prevent.stop="openGeolocation"
         >
           開啟定位服務
         </button>

@@ -23,7 +23,7 @@
   <Menu />
   <router-view style="padding-top: 120px" />
   <footer class="position-fixed bottom-0 w-100 bg-white text-success shadow py-3">
-    Designed By Len Cheng
+    Designed By Len Cheng && Celeste
   </footer>
 </template>
 <script>

@@ -23,8 +23,8 @@ export default createStore({
       StopOfRoute_url: 'https://ptx.transportdata.tw/MOTC/v2/Bus/StopOfRoute/City/',
       Station_url: 'https://ptx.transportdata.tw/MOTC/v2/Bus/Station/City/',
       nominatim_url: 'https://nominatim.openstreetmap.org/reverse?format=json&',
-      id: '0c672be3679e4f1e8441118a50a5d9f3',
-      key: 'ovFaA4lsqC5GyOKZHEEo_IS1Vt4',
+      id: process.env.VUE_APP_PTX_ID,
+      key: process.env.VUE_APP_PTX_KEY,
     },
     city: {
       Taipei: '臺北市',

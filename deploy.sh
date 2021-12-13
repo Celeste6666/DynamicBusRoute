@@ -14,7 +14,7 @@ set -e
 
 # git init
 git add -A
-git commit -m '完成收藏頁面刪除及側邊選單功能'
+git commit -m '修改觸控事件(TouchEvent→PointerEvent)'
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master

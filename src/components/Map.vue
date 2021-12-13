@@ -13,7 +13,7 @@
       <l-control
         :position="'bottomright'"
         ref="control"
-        @touchend="changeMapIsShow"
+        @pointerup="changeMapIsShow"
         v-if="$route.name === 'Arrival'"
       >
         <button class="btn btn-lg bg-white border-primary text-primary">

@@ -13,8 +13,11 @@
         <font-awesome-icon :icon="['fas', 'chevron-down']" class="fs-6 ms-3" />
       </button>
       <ul class="dropdown-menu rounded-3 shadow w-100 overflow-scroll" ref="dropdownMenu">
-        <li class="p-3 btn-lg position-absolute dropdown-menu-icon" @touchend.stop="closeDropMenu">
-          <font-awesome-icon :icon="['fas', 'chevron-up']" @touchend.stop="closeDropMenu" />
+        <li
+          class="p-3 btn-lg position-absolute dropdown-menu-icon"
+          @pointerup.stop.stop="closeDropMenu"
+        >
+          <font-awesome-icon :icon="['fas', 'chevron-up']" @pointerup.stop.stop="closeDropMenu" />
         </li>
         <li
           class="text-center py-3 btn-lg"
@@ -22,7 +25,7 @@
           :key="key"
           :data-city-en="key"
           :data-city-zh="city"
-          @touchend="getCityName"
+          @pointerup.stop="getCityName"
         >
           {{ city.substring(0, 2) }}公車
         </li>
@@ -51,12 +54,12 @@
           style="text-align: center"
           class="form-control border-0 me-3 fs-3 lh-sm"
         />
-        <button class="btn btn-lg btn-outline-primary fs-2" @touchend="changeKeyboard">
+        <button class="btn btn-lg btn-outline-primary fs-2" @pointerup.stop="changeKeyboard">
           <font-awesome-icon :icon="['fas', 'globe']" />
         </button>
       </div>
 
-      <div class="row gx-1 gy-2 btns-option mb-3" v-if="keyboard" @touchend="getRouteName">
+      <div class="row gx-1 gy-2 btns-option mb-3" v-if="keyboard" @pointerup.stop="getRouteName">
         <div class="col">
           <button class="btn btn-lg btn-outline-primary">{{ options ? '紅' : '內科' }}</button>
         </div>
@@ -91,12 +94,12 @@
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" @touchend="changeKeyboard">
+          <button class="btn btn-lg btn-outline-primary" @pointerup.stop="changeKeyboard">
             <font-awesome-icon :icon="['fas', 'globe']" />
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" @touchend="changeOptions">
+          <button class="btn btn-lg btn-outline-primary" @pointerup.stop="changeOptions">
             {{ options ? '更多' : '返回' }}
           </button>
         </div>
@@ -107,13 +110,17 @@
           <button
             class="btn btn-lg btn-outline-primary"
             data-clear="all"
-            @touchend.stop="deleteWord"
+            @pointerup.stop="deleteWord"
           >
             重設
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-lg btn-outline-primary" data-clear="1" @touchend.stop="deleteWord">
+          <button
+            class="btn btn-lg btn-outline-primary"
+            data-clear="1"
+            @pointerup.stop="deleteWord"
+          >
             <font-awesome-icon :icon="['fas', 'backspace']" />
           </button>
         </div>
@@ -162,6 +169,7 @@ export default {
 
     // 切換城市公車，把之前的routeName清空
     const getCityName = (e) => {
+      console.log(e);
       busSearch.cityEn = e.target.dataset.cityEn;
       busSearch.cityZh = e.target.dataset.cityZh;
       busSearch.routeName = '';

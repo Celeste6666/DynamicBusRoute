@@ -16,7 +16,7 @@
     </div>
     <div
       class="offcanvas-body d-flex flex-column align-items-center d-grid gap-5"
-      @touchend="closeMenu"
+      @pointerup="closeMenu"
     >
       <router-link to="/" class="btn">
         <img src="@/assets/logo.svg" alt="" srcset="" />
@@ -35,7 +35,7 @@
         <small class="text-success">收藏的公車站及路線</small>
       </router-link>
 
-      <footer class="position-fixed bottom-0 py-3">Designed By Len Cheng</footer>
+      <footer class="position-fixed bottom-0 py-3">Designed By Len Cheng && Celeste</footer>
     </div>
   </aside>
 </template>

@@ -5,7 +5,7 @@
       <font-awesome-icon
         :icon="['fas', 'reply']"
         class="fs-4"
-        @click="backToLast"
+        @pointerup.prevent.stop="backToLast"
         v-show="$route.path !== '/'"
       />
       <span class="mx-auto">全台公車時刻資訊整合網</span>

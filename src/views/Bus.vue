@@ -1,9 +1,8 @@
 <template>
   <article class="bus container" style="padding-top: 120px">
-    <div class="dropdown">
+    <div class="dropdown" ref="dropdown">
       <button
         class="btn bg-white btn-lg rounded-3 w-100"
-        ref="dropdownBtn"
         type="button"
         data-bs-toggle="dropdown"
         data-bs-auto-close="true"
@@ -12,12 +11,12 @@
         {{ cityZh ? `${cityZh.substring(0, 2)}公車` : '選擇縣市' }}
         <font-awesome-icon :icon="['fas', 'chevron-down']" class="fs-6 ms-3" />
       </button>
-      <ul class="dropdown-menu rounded-3 shadow w-100 overflow-scroll" ref="dropdownMenu">
+      <ul class="dropdown-menu rounded-3 shadow w-100 overflow-scroll">
         <li
           class="p-3 btn-lg position-absolute dropdown-menu-icon"
-          @pointerup.stop.stop="closeDropMenu"
+          @pointerup.prevent.stop="closeDropMenu"
         >
-          <font-awesome-icon :icon="['fas', 'chevron-up']" @pointerup.stop.stop="closeDropMenu" />
+          <font-awesome-icon :icon="['fas', 'chevron-up']" @pointerup.stop="closeDropMenu" />
         </li>
         <li
           class="text-center py-3 btn-lg"
@@ -25,7 +24,7 @@
           :key="key"
           :data-city-en="key"
           :data-city-zh="city"
-          @pointerup.stop="getCityName"
+          @pointerup.prevent.stop="getCityName"
         >
           {{ city.substring(0, 2) }}公車
         </li>
@@ -129,6 +128,7 @@
   </section>
 </template>
 <script>
+import * as bootstrap from 'bootstrap';
 import { useStore } from 'vuex';
 import {
   computed,
@@ -137,6 +137,7 @@ import {
   nextTick,
   toRefs,
   watch,
+  onMounted,
   //
 } from 'vue';
 import BusRoute from '@/components/BusRoute.vue';
@@ -150,13 +151,10 @@ export default {
     const { state, dispatch } = useStore();
 
     const BusCity = computed(() => state.city);
-    const dropdownBtn = ref(null);
-    const dropdownMenu = ref(null);
+    const dropdown = ref(null);
 
     const closeDropMenu = () => {
-      dropdownBtn.value.classList.remove('show');
-      dropdownBtn.value.setAttribute('aria-expanded', false);
-      dropdownMenu.value.classList.remove('show');
+      new bootstrap.Dropdown(dropdown.value).hide();
     };
 
     const customKeyboard = ref(false);
@@ -169,10 +167,10 @@ export default {
 
     // 切換城市公車，把之前的routeName清空
     const getCityName = (e) => {
-      console.log(e);
       busSearch.cityEn = e.target.dataset.cityEn;
       busSearch.cityZh = e.target.dataset.cityZh;
       busSearch.routeName = '';
+      closeDropMenu();
       customKeyboard.value = true;
     };
 
@@ -224,10 +222,15 @@ export default {
       options.value = !options.value;
     };
 
+    onMounted(() => {
+      dropdown.value.addEventListener('show.bs.dropdown', () => {
+        customKeyboard.value = false;
+      });
+    });
+
     return {
       BusCity,
-      dropdownBtn,
-      dropdownMenu,
+      dropdown,
       closeDropMenu,
       customKeyboard,
       ...toRefs(busSearch),

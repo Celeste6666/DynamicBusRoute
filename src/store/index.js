@@ -135,8 +135,8 @@ export default createStore({
     filterEstimatedBus: (state) => (direction) => {
       if (state.selectedRoute.Estimated.length !== 0) {
         const diffBus = state.selectedRoute.Estimated.reduce((acc, cur) => {
-          if (!acc.some((item) => item.StopUID === cur.StopUID
-          && item.Direction === cur.Direction)) {
+          if (!acc.some((item) => item.StopUID === cur.StopUID &&
+          item.Direction === cur.Direction)) {
             return [...acc, cur];
           }
           return acc;

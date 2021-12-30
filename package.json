@@ -65,7 +65,10 @@
           }
         }
       ],
-      "operator-linebreak": ["error", "after"]
+      "operator-linebreak": [
+        "error",
+        "after"
+      ]
     }
   },
   "browserslist": [

@@ -106,9 +106,9 @@ export default {
               {
                 ...stop,
                 DestinationStopNameZh: destination[0].DestinationStopNameZh,
-                EstimateTime: estimated[0]
-                  ? `${Math.ceil(estimated[0].EstimateTime / 60)}分`
-                  : '未提供',
+                EstimateTime: estimated[0] ?
+                  `${Math.ceil(estimated[0].EstimateTime / 60)}分` :
+                  '未提供',
               },
             ];
           });

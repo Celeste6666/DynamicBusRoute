@@ -14,7 +14,7 @@ set -e
 
 # git init
 git add -A
-git commit -m '修改觸控事件(TouchEvent→PointerEvent)'
+git commit -m '修改公車路線查詢鍵盤與選單同時出現問題'
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master

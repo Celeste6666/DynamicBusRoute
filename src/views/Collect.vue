@@ -4,14 +4,14 @@
       <div class="col-6 d-grid bg-white">
         <router-link
           to="/collect/station"
-          :class="['btn  rounded-3', $route.name === 'CollectStation' ? 'btn-primary' : 'bg-white']"
+          :class="['btn rounded-3', $route.name === 'CollectStation' ? 'btn-primary' : 'bg-white']"
           >公車站</router-link
         >
       </div>
       <div class="col-6 d-grid">
         <router-link
           to="/collect/route"
-          :class="['btn  rounded-3', $route.name === 'CollectRoute' ? 'btn-primary' : 'bg-white']"
+          :class="['btn rounded-3', $route.name === 'CollectRoute' ? 'btn-primary' : 'bg-white']"
           >公車路線</router-link
         >
       </div>

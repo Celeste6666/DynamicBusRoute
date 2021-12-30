@@ -24,11 +24,14 @@
         <td class="text-start">
           {{ route.DestinationStopNameZh }}
         </td>
-        <td v-if="$route.name !== 'CollectRoute'" @pointerup.stop="setCollectRoute(route.RouteUID)">
+        <td
+          v-if="$route.name !== 'CollectRoute'"
+          @pointerup.prevent.stop="setCollectRoute(route.RouteUID)"
+        >
           <font-awesome-icon :icon="[route.isCollect ? 'fas' : 'far', 'bookmark']" class="mx-2" />
         </td>
         <td
-          class="w-25 h-100 p-0 position-absolute right-0"
+          class="w-25 p-0 position-absolute bottom-0 top-0 right-0"
           v-if="$route.name === 'CollectRoute' && deleteBtnIsShow === route.RouteUID"
         >
           <button
@@ -65,6 +68,7 @@ export default {
 
     let pointerOffsetX = 0;
     const showDeleteBtn = (e, routeId) => {
+      if (router.currentRoute.value.name !== 'CollectRoute') return;
       if (!pointerOffsetX) {
         pointerOffsetX = e.offsetX;
         return;
@@ -81,6 +85,7 @@ export default {
     const setCollectRoute = (routeId) => {
       let collectRoute = JSON.parse(localStorage.getItem('collectRoute')) || [];
       const storeRoute = routes.value.find((route) => route.RouteUID === routeId);
+      console.log(routeId, storeRoute);
       if (storeRoute.isCollect) {
         const storeIndex = collectRoute.findIndex((route) => route.RouteUID === routeId);
         collectRoute.splice(storeIndex, 1);

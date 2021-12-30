@@ -27,7 +27,7 @@
           </td>
         </template>
         <td
-          class="w-25 h-100 p-0 position-absolute right-0"
+          class="w-25 p-0 position-absolute bottom-0 top-0 right-0"
           v-if="deleteBtnIsShow === station.stop.StopUID"
         >
           <button
@@ -49,7 +49,7 @@ export default {
   name: 'CollectStation',
   setup() {
     const { state, getters } = useStore();
-    const stations = ref(JSON.parse(localStorage.getItem('collectStation')));
+    const stations = ref(JSON.parse(localStorage.getItem('collectStation')) || []);
     const estimateTime = ref([]);
 
     watch(

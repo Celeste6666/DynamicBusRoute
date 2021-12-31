@@ -26,7 +26,7 @@ export default {
   name: 'Collect',
   setup() {
     const { commit } = useStore();
-    commit('getRouteData', JSON.parse(localStorage.getItem('collectRoute')));
+    commit('getRouteData', JSON.parse(localStorage.getItem('collectRoute')) || []);
   },
 };
 </script>

@@ -53,7 +53,10 @@
           style="text-align: center"
           class="form-control border-0 me-3 fs-3 lh-sm"
         />
-        <button class="btn btn-lg btn-outline-primary fs-2" @pointerup.stop="changeKeyboard">
+        <button
+          class="btn btn-lg btn-outline-primary fs-2"
+          @pointerup.prevent.stop="changeKeyboard"
+        >
           <font-awesome-icon :icon="['fas', 'globe']" />
         </button>
       </div>

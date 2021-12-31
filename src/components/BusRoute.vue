@@ -1,49 +1,41 @@
 <template>
-  <table
-    class="table table-borderless align-middle"
-    v-if="routes.length !== 0 && routes[0].RouteUID"
-  >
-    <tbody>
-      <tr
-        v-for="route of routes"
-        :key="route.RouteUID"
-        :class="[
-          'bg-white btn-lg position-relative',
-          deleteBtnIsShow === route.RouteUID ? 'moveRight' : '',
-        ]"
-        @pointermove.prevent="showDeleteBtn($event, route.RouteUID)"
-        @pointerup.prevent="changeRouterId(route.City, route.RouteName.Zh_tw, route.RouteUID)"
+  <div class="container" v-if="routes.length !== 0 && routes[0].RouteUID">
+    <div
+      v-for="route of routes"
+      :key="route.RouteUID"
+      :class="[
+        'row gx-2 justify-content-between  align-items-center my-3 bg-white py-2 px-1  rounded-3',
+        deleteBtnIsShow === route.RouteUID ? 'moveRight' : '',
+      ]"
+      @pointermove.prevent="showDeleteBtn($event, route.RouteUID)"
+      @pointerup.prevent="changeRouterId(route.City, route.RouteName.Zh_tw, route.RouteUID)"
+    >
+      <div class="col-auto">{{ route.RouteName.Zh_tw }}</div>
+      <div class="col text-center">
+        <span>{{ route.DepartureStopNameZh }}</span>
+        <font-awesome-icon :icon="['fas', 'exchange-alt']" class="mx-2" />
+        <span>{{ route.DestinationStopNameZh }}</span>
+      </div>
+      <div
+        class="col-1 ms-auto"
+        v-if="$route.name !== 'CollectRoute'"
+        @pointerup.prevent.stop="setCollectRoute(route.RouteUID)"
       >
-        <td class="">{{ route.RouteName.Zh_tw }}</td>
-        <td class="text-end">
-          {{ route.DepartureStopNameZh }}
-        </td>
-        <td>
-          <font-awesome-icon :icon="['fas', 'exchange-alt']" class="mx-2" />
-        </td>
-        <td class="text-start">
-          {{ route.DestinationStopNameZh }}
-        </td>
-        <td
-          v-if="$route.name !== 'CollectRoute'"
-          @pointerup.prevent.stop="setCollectRoute(route.RouteUID)"
+        <font-awesome-icon :icon="[route.isCollect ? 'fas' : 'far', 'bookmark']" class="mx-2" />
+      </div>
+      <div
+        class="p-0 text-nowrap col-auto"
+        v-if="$route.path !== '/bus' && deleteBtnIsShow === route.RouteUID"
+      >
+        <button
+          class="btn btn-primary rounded-3 h-100 px-4"
+          @pointerup.prevent="removeCollect(route.RouteUID)"
         >
-          <font-awesome-icon :icon="[route.isCollect ? 'fas' : 'far', 'bookmark']" class="mx-2" />
-        </td>
-        <td
-          class="w-25 p-0 position-absolute bottom-0 top-0 right-0"
-          v-if="$route.name === 'CollectRoute' && deleteBtnIsShow === route.RouteUID"
-        >
-          <button
-            class="w-100 h-100 btn btn-primary rounded-3"
-            @pointerup.prevent="removeCollect(route.RouteUID)"
-          >
-            刪除
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          刪除
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import { useStore } from 'vuex';
@@ -68,7 +60,8 @@ export default {
 
     let pointerOffsetX = 0;
     const showDeleteBtn = (e, routeId) => {
-      if (router.currentRoute.value.name !== 'CollectRoute') return;
+      console.log(router.currentRoute.value.path);
+      if (router.currentRoute.value.path === '/bus') return;
       if (!pointerOffsetX) {
         pointerOffsetX = e.offsetX;
         return;
@@ -130,10 +123,17 @@ table {
   }
 }
 
-tr {
+.row {
   transition: 0.3s linear;
   &.moveRight {
-    transform: translate(-88px, 0);
+    position: relative;
+    transform: translateX(-80px);
+    & .col-auto:last-child {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: -85px;
+    }
   }
 }
 </style>

@@ -14,7 +14,7 @@ set -e
 
 # git init
 git add -A
-git commit -m '修改公車路線查詢鍵盤與選單同時出現問題'
+git commit -m '修改公車收藏頁面公車站抵達時間預估及刪除按鈕定位'
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
